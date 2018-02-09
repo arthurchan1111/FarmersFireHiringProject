@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Home {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='index.css')}}">
+{% endblock %}
+
+
+{% block content %}
+
+<section class="container">
+  <div id="app">
+    <div class="row">
+      <div class="col">
+        <headers my-title="Search"></headers>
+      </div>
+
+      <div class="col">
+        <headers my-title="Results"></headers>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        
+      </div>
+
+    </div>
+
+</div>
+</section>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{url_for('static', filename='index.js')}}"></script>
+
+{% endblock %}

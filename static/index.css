@@ -1,7 +1,46 @@
+
+
+[v-cloak] { display:none; }
+
+#basicSearch{
+  border: 1px solid #ced4da;
+  border-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: #fff;
+
+}
+button:focus {outline:0;}
+form{
+  margin-top: 4%;
+}
+section{
+  margin-top: 5%;
+}
 .form-check-label{
   padding-left: 0;
 }
 
 .form-check{
   margin-left: 3%;
+}
+
+#accordion{
+  background-color: #fff;
+}
+
+.card-header{
+  background-color: #fff;
+}
+
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
 }
