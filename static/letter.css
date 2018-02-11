@@ -1,0 +1,22 @@
+*{
+   box-sizing: border-box;
+   font-family: Calibri;
+   font-size: 95%;
+}
+body{
+  margin: 6em;
+}
+ #header{
+   width: 80%;
+   margin-bottom: 5%;
+
+ }
+ #address{
+   text-indent: 5%;
+ }
+
+#footer{
+  margin-top: 10%;
+  width: 50%;
+
+}
