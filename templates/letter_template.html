@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Home {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='letter.css')}}">
+{% endblock %}
+
+
+{% block content %}
+<header class="container text-center">
+    <div class="row">
+      <div class="col">
+      <img id="header" src="{{url_for('static', filename='header.png')}}" />
+    </div>
+    </div>
+</header>
+<section class="container">
+  <div class="row">
+    <div class="col">
+    <p class="text-right"> Date: {{date}}</p>
+  </div>
+  </div>
+</section>
+<section class="container">
+    <address> JOHN SMITH<br>
+      123 SAMPLE ST <br>
+      YORK, PA 17402
+    </address>
+</section>
+{% if letter.title %}
+<section class="container">
+    <div class="row">
+      <div class="col">
+    <h4 class="text-center"> {{letter.title}}</h4>
+  </div>
+  </div>
+</section>
+{% endif %}
+<article class="container text-justify">
+  <div class="row">
+    <div class="col">
+  <p> Dear Insured: </p>
+
+  <p> Our records indicate that under Dwelling Fire policy # 10-2018-123456 we currently insure your dwelling located at the
+following address: </p>
+    <p id="address"> 654 App St, York, PA 17402 </p>
+
+{{letter.text|safe}}
+
+<p>Respectfully,<br>
+The Farmers Fire Insurance Company </p>
+</div>
+</div>
+</article>
+
+<footer class="container text-center">
+    <img id="footer" src="{{url_for('static', filename='footer.png')}}" />
+</footer>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
