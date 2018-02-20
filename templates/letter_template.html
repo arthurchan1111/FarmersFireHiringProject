@@ -5,8 +5,31 @@
 {% block head %}
 {{ super() }}
 <link rel="stylesheet" href="{{url_for('static', filename='letter.css')}}">
+
 {% endblock %}
 
+{% block nav %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Toolbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#options">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="options">
+    <ul class="navbar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('editLetter', id=id)}}" target="_blank">Edit <i class="fas fa-edit"></i></a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="{{url_for('pdfLetter', id=id)}}" target="_blank">Export as PDF <i class="fas fa-file-pdf"></i></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+{% endblock %}
 
 {% block content %}
 <header class="container text-center">
@@ -17,49 +40,32 @@
     </div>
 </header>
 <section class="container">
-  <div class="row">
-    <div class="col">
     <p class="text-right"> Date: {{date}}</p>
-  </div>
-  </div>
 </section>
+
 <section class="container">
-    <address> JOHN SMITH<br>
-      123 SAMPLE ST <br>
-      YORK, PA 17402
+    <address>{{contact.first_name.title()}} {{contact.last_name.title()}} <br>
+      {{address_heading[0].title()}} <br>
+        {{address_heading[1].title()}}
     </address>
 </section>
 {% if letter.title %}
 <section class="container">
-    <div class="row">
-      <div class="col">
     <h4 class="text-center"> {{letter.title}}</h4>
-  </div>
-  </div>
 </section>
 {% endif %}
+
 <article class="container text-justify">
-  <div class="row">
-    <div class="col">
-  <p> Dear Insured: </p>
-
-  <p> Our records indicate that under Dwelling Fire policy # 10-2018-123456 we currently insure your dwelling located at the
-following address: </p>
-    <p id="address"> 654 App St, York, PA 17402 </p>
-
+<p>Dear Insured: </p>
+<p>Our records indicate that under {{policy_type.policy_type.title()}} policy # {{policy.number}} we currently insure your dwelling located at the
+  following address: </p>
+<p id="address">{{address.address.title()}}</p>
 {{letter.text|safe}}
-
 <p>Respectfully,<br>
 The Farmers Fire Insurance Company </p>
-</div>
-</div>
 </article>
 
 <footer class="container text-center">
     <img id="footer" src="{{url_for('static', filename='footer.png')}}" />
 </footer>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
 {% endblock %}

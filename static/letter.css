@@ -3,20 +3,42 @@
    font-family: Calibri;
    font-size: 95%;
 }
-body{
-  margin: 6em;
-}
- #header{
-   width: 80%;
-   margin-bottom: 5%;
+@media screen and (min-width: 768px){
+  body{
+    margin-right:  6em;
+    margin-left: 6em;
+    margin-bottom: 3em;
+  }
 
- }
+  #footer{
+    margin-top: 10%;
+    width: 50%;
+
+  }
+  #header{
+    width: 80%;
+    margin-bottom: 5%;
+    margin-top: 5%;
+
+  }
+}
+@media screen and (max-width: 767px){
+  body{
+    margin: 0 2em 2em 2em;
+  }
+  #footer{
+    margin-top: 10%;
+    width: 100%;
+
+  }
+  #header{
+    width: 100%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+
+  }
+}
+
  #address{
    text-indent: 5%;
  }
-
-#footer{
-  margin-top: 10%;
-  width: 50%;
-
-}
