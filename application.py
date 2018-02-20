@@ -2,7 +2,7 @@
 from database_setup import Base, Contacts, Address, Policy, PolicyType, Letter
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response, g
+from flask import Flask, render_template,render_template_string, request, redirect, url_for, flash, jsonify, make_response, g
 from flask import session as document_session
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -27,7 +27,18 @@ admin.add_view(ModelView(PolicyType, session))
 admin.add_view(ModelView(Letter, session))
 
 session.rollback()
-
+options = {
+    'page-size': 'Letter',
+    'margin-top': '1in',
+    'margin-right': '1in',
+    'margin-bottom': '1in',
+    'margin-left': '1in',
+    'encoding': "UTF-8",
+    'user-style-sheet': 'letter.css',
+    'custom-header' : [
+        ('Accept-Encoding', 'gzip')
+    ],
+}
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -74,6 +85,57 @@ def letter(id, **kwargs):
     today = (str(date.today().strftime('%m/%d/%Y')))
     letter = session.query(Letter).filter(Letter.id == id).one()
     return render_template('letter_template.html', id=id, date=today, letter=letter, policy=policy, contact = contact, address = address, policy_type = policy_type, address_heading = address_heading)
+
+@app.route('/letters/<int:id>/edit', methods=['GET'])
+def editLetter(id):
+    editStatus = True
+    pnum = document_session['pnum']
+    policy = session.query(Policy).filter(Policy.number == pnum).first()
+    contact = session.query(Contacts).filter(Contacts.id == policy.contact_id).first()
+    address = session.query(Address).filter(Address.policy_id == policy.id).first()
+    address_heading = address.address.split(",", 1)
+    policy_type = session.query(PolicyType).filter(PolicyType.policy_id == policy.id).first()
+    today = (str(date.today().strftime('%m/%d/%Y')))
+    letter = session.query(Letter).filter(Letter.id == id).one()
+    html_template_string = """
+        <section class="container">
+            <p class="text-right">Date: %s</p>
+        </section>
+        <section class="container">
+            <address>%s %s<br>%s<br>%s</address>
+        </section>
+        <section class="container">
+            <h4 class="text-center">%s</h4>
+        </section>
+          <p>Dear Insured: </p>
+          <p>Our records indicate that under %s policy # %s we currently insure your dwelling located at the
+        following address:</p>
+          <p id="address">%s</p>
+          %s
+        <p>Respectfully,<br>The Farmers Fire Insurance Company </p>
+    """% (today,contact.first_name.title(),contact.last_name.title(),address_heading[0].title(),address_heading[1].title(), letter.title, policy_type.policy_type.title(),str(policy.number),address.address.title(),letter.text)
+    return render_template('edit.html', html=html_template_string, id=id)
+
+
+@app.route('/letters/<int:id>/pdf', methods=['GET'])
+def pdfLetter(id, **kwargs):
+    pnum = document_session['pnum']
+    css = ["static/bootstrap.min.css", "static/pdf.css"]
+    policy = session.query(Policy).filter(Policy.number == pnum).first()
+    contact = session.query(Contacts).filter(Contacts.id == policy.contact_id).first()
+    address = session.query(Address).filter(Address.policy_id == policy.id).first()
+    address_heading = address.address.split(",", 1)
+    policy_type = session.query(PolicyType).filter(PolicyType.policy_id == policy.id).first()
+    today = (str(date.today().strftime('%m/%d/%Y')))
+    letter = session.query(Letter).filter(Letter.id == id).one()
+    rendered_template = render_template('pdf.html', date=today, letter=letter, policy=policy, contact = contact, address = address, policy_type = policy_type, address_heading = address_heading)
+    pdffile= pdfkit.from_string(rendered_template, False, options=options, css=css)
+
+    response = make_response(pdffile)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+    return response
+
 
 @app.route('/JSON/policy/<int:policy>')
 def getPolicy(policy):
