@@ -1,0 +1,19 @@
+*{
+   box-sizing: border-box;
+   font-family: Calibri;
+   font-size: 105%;
+}
+
+article{
+  padding-top: 5%;
+}
+h4{
+  padding-top: 3%;
+}
+#address{
+  text-indent: 5%;
+}
+
+article > p{
+  margin-top: 10%;
+}

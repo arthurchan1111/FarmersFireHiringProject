@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Home {% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<section class="container">
+  <div class="row">
+    <div class="col">
+    <p class="text-right"> Date: {{date}}</p>
+  </div>
+  </div>
+</section>
+<section class="container">
+    <address>{{contact.first_name.title()}} {{contact.last_name.title()}} <br>
+      {{address_heading[0].title()}} <br>
+        {{address_heading[1].title()}}
+    </address>
+</section>
+{% if letter.title %}
+<section class="container">
+    <div class="row">
+      <div class="col">
+    <h4 class="text-center"> {{letter.title}}</h4>
+  </div>
+  </div>
+</section>
+{% endif %}
+<article class="container text-justify">
+  <div class="row">
+    <div class="col">
+  <p> Dear Insured: </p>
+
+  <p> Our records indicate that under {{policy_type.policy_type.title()}} policy # {{policy.number}} we currently insure your dwelling located at the
+following address: </p>
+    <p id="address">{{address.address.title()}}  </p>
+
+{{letter.text|safe}}
+
+<p>Respectfully,<br>
+The Farmers Fire Insurance Company </p>
+</div>
+</div>
+</article>
+
+{% endblock %}
