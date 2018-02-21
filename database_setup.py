@@ -84,6 +84,7 @@ class Letter(Base):
 
 
 
-engine = create_engine('postgresql:///farmerfire')
+#engine = create_engine('postgresql:///farmerfire')
+engine = create_engine('postgresql://username:password@farmers-fire.cmgyzlcu6ukp.us-east-1.rds.amazonaws.com:5432/farmersfire')
 
 Base.metadata.create_all(engine)

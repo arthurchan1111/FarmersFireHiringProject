@@ -130,7 +130,7 @@ var app = new Vue({
 
       if (commercialTest.test(searchResult) || dwellersTest.test(searchResult) || homeTest.test(searchResult)) {
         console.log("We're searching for policy type");
-        var base_url = "http://localhost:5000/JSON/policytype/"
+        var base_url = "https://d1apf2cvs5.execute-api.us-east-1.amazonaws.com/dev/JSON/policytype/"
         console.log(dwellersTest.test(searchResult))
         if (dwellersTest.test(searchResult) === true) {
           base_url += "dwellers " + "fire";
@@ -147,7 +147,7 @@ var app = new Vue({
 
       } else if (nameTest.test(searchResult)) {
         var namelist = searchResult.split(" ")
-        var url = "http://localhost:5000/JSON/contacts" + "?fname=" + namelist[0].toLowerCase()
+        var url = "https://d1apf2cvs5.execute-api.us-east-1.amazonaws.com/dev/JSON/contacts" + "?fname=" + namelist[0].toLowerCase()
         if (namelist[1] === undefined) {
           return url
         }
@@ -157,13 +157,13 @@ var app = new Vue({
 
       } else if (policynumberTest.test(searchResult)) {
         console.log("We're searching for policy number");
-        var url = "http://localhost:5000/JSON/policy/" + searchResult
+        var url = "https://d1apf2cvs5.execute-api.us-east-1.amazonaws.com/dev/JSON/policy/" + searchResult
         console.log(url)
         return url
 
       } else {
         console.log("We're searching for address");
-        var url = "http://localhost:5000/JSON/address/" + searchResult.toLowerCase()
+        var url = "https://d1apf2cvs5.execute-api.us-east-1.amazonaws.com/dev/JSON/address/" + searchResult.toLowerCase()
         return url
       }
 
@@ -171,7 +171,7 @@ var app = new Vue({
     },
 
     advancedSearch: function(formData) {
-      var base_url = "http://localhost:5000/JSON/advanced";
+      var base_url = "https://d1apf2cvs5.execute-api.us-east-1.amazonaws.com/dev/JSON/advanced";
       var first_name_arg = "?fname=" + formData.fname.toLowerCase()
       var last_name_arg = "&lname=" + formData.lname.toLowerCase()
       var address_arg = "&address=" + formData.address.toLowerCase()
@@ -207,7 +207,7 @@ var app = new Vue({
       var postResult = this.post;
       var letter = this.letterCode;
       var vm = this;
-      return fetch("http://localhost:5000/", {
+      return fetch("https://d1apf2cvs5.execute-api.us-east-1.amazonaws.com/dev/", {
         method: "POST",
         body: JSON.stringify({
           "data": postResult,
