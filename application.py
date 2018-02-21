@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 from database_setup import Base, Contacts, Address, Policy, PolicyType, Letter
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
 from flask import Flask, render_template,render_template_string, request, redirect, url_for, flash, jsonify, make_response, g
 from flask import session as document_session
@@ -68,6 +68,7 @@ def index():
     else:
         general = session.query(Letter).filter(Letter.policy_type == "General").all()
         commercial = session.query(Letter).filter(Letter.policy_type == "Commercial").all()
+        print commercial
         dwellers = session.query(Letter).filter(Letter.policy_type == "Dwellers Fire").all()
         home = session.query(Letter).filter(Letter.policy_type == "Homeowners").all()
         return render_template('index.html', general=general, commercial= commercial, dwellers=dwellers, home=home)
@@ -204,8 +205,10 @@ def getPolicyType(ptype):
             policyTypes = []
             for x in range(len(policytype)):
                 policyinfo = session.query(Policy).filter(Policy.id == policytype[x].policy_id).first()
-                policy = {"policy": policytype[x].policy_type,
-                          "policy_number": policyinfo.number}
+                contact = session.query(Contacts).filter(Contacts.id == policyinfo.contact_id).first()
+                address = session.query(Address).filter(Address.policy_id == policyinfo.id).first()
+                policy = {"first_name": contact.first_name, "last_name": contact.last_name, "address": address.address,
+                    "policy": policytype[x].policy_type, "policy_number": policyinfo.number}
 
                 policyTypes.append(policy)
 
@@ -215,6 +218,61 @@ def getPolicyType(ptype):
 
         return make_response(jsonify({'error': 'Not found'}), 404)
 
+    except:
+        return make_response(jsonify({'error': 'Not found'}), 404)
+
+@app.route('/JSON/advanced')
+def advancedSearch():
+    try:
+        query_all = session.query(Contacts, Policy, Address, PolicyType).join(Policy, Policy.contact_id == Contacts.id).join(Address, and_(Address.contact_id == Contacts.id, Address.policy_id == Policy.id)).join(PolicyType, PolicyType.policy_id == Policy.id)
+        arg_dict = {'first_name': request.args.get("fname"), "last_name": request.args.get("lname"), "address" : request.args.get("address"), "policy": request.args.get("pnum"), "policytype": request.args.get("ptype")}
+        truthiness = {}
+        response = []
+        for keys in arg_dict.items():
+            if keys[1]:
+                truthiness[keys[0]]  = True
+
+            else:
+                truthiness[keys[0]]  = False
+
+
+        valid_inputs = {k:v for k,v in truthiness.items() if v == True}
+        valid_keys = valid_inputs.keys()
+
+        if len(valid_keys) > 0:
+            for x in range(len(valid_keys)):
+                if(valid_keys[x] == 'first_name'):
+                    query_all = query_all.filter(Contacts.first_name == request.args.get("fname"))
+
+                if(valid_keys[x] == 'last_name'):
+                    query_all = query_all.filter(Contacts.last_name == request.args.get("lname"))
+
+                if(valid_keys[x]== 'address'):
+                    query_all = query_all.filter(Address.address == request.args.get("address"))
+
+                if(valid_keys[x] == 'policy'):
+                    print "here"
+                    query_all = query_all.filter(Policy.number == int(request.args.get("pnum")))
+
+                if(valid_keys[x] == 'policytype'):
+                    query_all = query_all.filter(PolicyType.policy_type == str(request.args.get("ptype")))
+
+            get_filtered_list = query_all.all()
+
+            if len(get_filtered_list) > 0 :
+                for x in range(len(get_filtered_list)):
+                    contact = {"id": get_filtered_list[x][0].id, "first_name": get_filtered_list[x][0].first_name,
+                            "last_name": get_filtered_list[x][0].last_name, "policy_number": get_filtered_list[x][1].number,
+                             "address": get_filtered_list[x][2].address, "policy": get_filtered_list[x][3].policy_type}
+
+                    response.append(contact)
+
+                response.append("adv")
+                return jsonify(Policy = response)
+
+
+
+        return make_response(jsonify({'error': 'Not found'}), 404)
     except:
         return make_response(jsonify({'error': 'Not found'}), 404)
 
