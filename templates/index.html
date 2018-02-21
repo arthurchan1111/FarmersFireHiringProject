@@ -12,60 +12,559 @@
 
 <section class="container">
   <div id="app">
+
+<div class="mobile" v-if="mobileState" v-cloak>
+  <div class="row">
+    <div class="col" v-if="mobileSelectState === 0  && post.length < 1">
+      <h2> Search: </h2>
+    </div>
+    <div class="col" v-if="mobileSelectState === 1" v-cloak>
+      <h2> Results: </h2>
+    </div>
+    <div class="col" v-if="post.length > 0 && mobileSelectState === 2" v-cloak>
+      <h2> Choose a Template: </h2>
+    </div>
+</div>
+<div class="row">
+      <div class="col" v-if="post.length < 1 && mobileSelectState === 0">
+      <form>
+        <div class="input-group">
+        <input class="form-control" placeholder="Enter Text" v-model="search" v-bind:disabled="checked">
+        <div class="input-group-append">
+          <button class="btn btn-warning" id="basicSearch" v-bind:disabled="checked" @click="mobileSelectState += 1" type="button"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+        <div class="col" id="checkinput">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" v-model="checked">
+                <label class="form-check-label">Advanced Search</label>
+            </div>
+        </div>
+        <div v-if="checked === true"  v-cloak>
+            <div class="col">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label> First Name: </label>
+                        <input type="text"  v-model="form.fname" class="form-control" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label> Last Name: </label>
+                        <input type="text" v-model="form.lname" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label>Address: </label>
+                    <input type="text" v-model="form.address" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="form-group">
+                    <label>Policy Number: </label>
+                    <input type="number" v-model="form.policy_number" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                  <label>Policy Type: </label>
+                  <select class="form-control" v-model="form.policy_type">
+                    <option hidden disabled selected value>Select a policy type</option>
+                    <option>Homeowners</option>
+                    <option>Dwellers Fire</option>
+                    <option>Commercial</option>
+                  </select>
+              </div>
+
+            </div>
+            <div class="form-group">
+            <button class="btn btn-primary btn-block" type="button" @click="mobileSelectState += 1"> Search </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+    <div class="col" v-if="mobileSelectState === 1 && post.length >= 0">
+      <div class="list-group" v-if="dataCode === 'pn'|| dataCode === 'add'" v-cloak>
+        <div class="list-group-item list-group-item-action" >
+            <div class="row">
+              <div class="col first-row-col">
+            <i>Contact: </i>{% raw %}{{requestData[0].first_name|capitalize}} {{requestData[0].last_name|capitalize}} {% endraw %}
+              <div class="float-right">
+                <input type="checkbox" v-model="post" v-bind:value="requestData[2].policy_number">
+              </div>
+          </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <i>Address: </i>{% raw %}{{requestData[1].address|address}}{% endraw %}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <i>Policy Number: #</i>{% raw %}{{requestData[2].policy_number}}{% endraw %}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <i>Policy Type: </i>{% raw %}{{requestData[3].policy_type|title}}{% endraw %}
+            </div>
+          </div>
+          </div>
+      </div>
+
+      <div id="contactaccordion" v-else-if="dataCode === 'ct'" v-cloak>
+        <div v-for="(items,index) in requestData">
+        <div class="card">
+          <div class="card-header">
+            <div class="row">
+              <div class="col first-row-col">
+
+              <button class="btn btn-link" v-bind:id="items.id" data-toggle="collapse" :data-target="'#'+items.id + 'addresses'">
+                {% raw %}{{items.first_name|capitalize}} {{items.last_name|capitalize}}{% endraw %}
+              </button>
+
+              <div class="float-right align-middle">
+
+            </div>
+          </div>
+          </div>
+
+          </div>
+          <div v-bind:id="items.id + 'addresses'" class="collapse" data-parent="#contactaccordion">
+            <div class="card-body" >
+              <div class="list-group" v-for="address in items.addresses">
+                <div class="row">
+                  <div class="col first-row-col">
+                {% raw %}{{address|address}}{% endraw %}
+                <div class="float-right">
+                  <input type="checkbox" v-model="post" v-bind:value="address">
+                </div>
+              </div>
+
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <div class = "policytype-container" v-else-if="dataCode === 'pt' || dataCode ==='adv'"  v-cloak>
     <div class="row">
       <div class="col">
-        <h2> Search </h2>
+        <div class="form-check">
+          <input class="form-check-input float-right" type="checkbox" v-model="selectAll" id="selectcheck">
+          <label class="form-check-label float-left" for="selectcheck">
+            Select All
+          </label>
+        </div>
+
+      </div>
+    </div>
+    <div class="list-group"  v-for="p in requestData">
+      <div class="list-group-item list-group-item-action" >
+        <div class="row">
+          <div class="col first-row-col">
+        <i>Contact: </i>{% raw %}{{p.first_name|capitalize}} {{p.last_name|capitalize}} {% endraw %}
+        <div class="float-right">
+            <input type="checkbox" v-model="post" v-bind:value="p.policy_number">
+        </div>
+      </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <i>Address: </i>{% raw %}{{p.address|address}}{% endraw %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <i>Policy Number: #</i>{% raw %}{{p.policy_number}}{% endraw %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <i>Policy Type: </i>{% raw %}{{p.policy|title}}{% endraw %}
+        </div>
+      </div>
+      </div>
+
+    </div>
+  </div>
+
+
+      <div v-else  v-cloak>
+        <p> Cannot find results</p>
+      </div>
+
+    </div>
+    <div class="col" v-if="post.length > 0 && mobileSelectState === 2" v-cloak>
+       <div id="accordion">
+         {% for g in general %}
+         <div class="card">
+           <div class="card-header" id="headinggeneral">
+             <h5>
+               <button class="btn btn-link" data-toggle="collapse" data-target="#bodygeneral">
+                 General <span class="badge badge-primary">{{general|length}}</span>
+               </button>
+             </h5>
+           </div>
+           <div id="bodygeneral" class="collapse" data-parent="#accordion">
+             <div class="card-body">
+               <div class="list-group">
+
+                 <button class="list-group-item list-group-item-action" v-on:click="letterCode = {{g.id}}" >{{g.name}}</a>
+
+               </div>
+             </div>
+           </div>
+         </div>
+         {% endfor %}
+         {% for h in homeowners %}
+         <div class="card">
+           <div class="card-header" id="headinghomeown">
+             <h5>
+               <button class="btn btn-link" data-toggle="collapse" data-target="#bodyhomeowners" >
+                 Homeowners <span class="badge badge-primary">{{homeowners|length}}</span>
+               </button>
+             </h5>
+           </div>
+           <div id="bodyhomeowners" class="collapse" data-parent="#accordion">
+             <div class="card-body">
+               <div class="list-group">
+
+                 <button class="list-group-item list-group-item-action" v-on:click="letterCode = {{h.id}}" >{{h.name}}</a>
+
+               </div>
+             </div>
+           </div>
+         </div>
+         {% endfor %}
+         {% for d in dwellers %}
+         <div class="card">
+           <div class="card-header" id="headingdweller">
+             <h5>
+               <button class="btn btn-link" data-toggle="collapse" data-target="#bodydweller" >
+                 Dwellers Fire <span class="badge badge-primary">{{dwellers|length}}</span>
+               </button>
+             </h5>
+           </div>
+           <div id="bodydweller" class="collapse" data-parent="#accordion">
+             <div class="card-body">
+               <div class="list-group">
+
+                 <button class="list-group-item list-group-item-action" v-on:click="letterCode = {{d.id}}" >{{d.name}}</a>
+
+               </div>
+             </div>
+           </div>
+         </div>
+         {% endfor %}
+         {% for c in commercial %}
+         <div class="card">
+           <div class="card-header" id="headingcommercial">
+             <h5>
+               <button class="btn btn-link" data-toggle="collapse" data-target="#bodycommercial" >
+                 Commercial <span class="badge badge-primary">{{commercial|length}}</span>
+               </button>
+             </h5>
+           </div>
+           <div id="bodycommercial" class="collapse" data-parent="#accordion">
+             <div class="card-body">
+               <div class="list-group">
+
+                 <button class="list-group-item list-group-item-action" v-on:click="letterCode = {{c.id}}" >{{c.name}}</a>
+
+               </div>
+             </div>
+           </div>
+         </div>
+         {% endfor %}
+       </div>
+    </div>
+    <div class="col" v-if="post.length === 0 && mobileSelectState === 2" v-cloak v-cloak>
+      <p> Please select an entry before continuing </p>
+    </div>
+
+  </div>
+
+  <div class="row">
+  <div class="col fixed-bottom" v-if="mobileSelectState > 0 " v-cloak>
+  <button type="button"  class="btn btn-primary float-left"  @click="stateHandler()"><i class="fas fa-angle-left"></i></button>
+  <button type="button" class="btn btn-primary float-right " v-if="post.length > 0 && mobileSelectState < 2"  @click="mobileSelectState += 1"><i class="fas fa-angle-right"></i></button>
+  </div>
+  </div>
+
+</div>
+
+  <div class="nonMobile" v-else v-cloak>
+    <div class="row">
+      <div class="col" v-if="post.length < 1">
+        <h2> Search: </h2>
       </div>
 
       <div class="col">
-        <h2> Result </h2>
+        <h2> Results: </h2>
       </div>
 
-      <div class="col">
-        <h2> Choose a template </h2>
+      <div class="col" v-if="post.length > 0" v-cloak>
+        <h2> Choose a Template: </h2>
       </div>
     </div>
 
   <div class="row">
-      <div class="col">
+        <div class="col" v-if="post.length < 1">
         <form>
-          <input class="form-control" placeholder="Enter Text" v-model="search">
+          <input class="form-control" placeholder="Enter Text" v-model="search" v-bind:disabled="checked">
+          <div class="col" id="checkinput">
+              <div class="form-check">
+                  <input type="checkbox" class="form-check-input" v-model="checked">
+                  <label class="form-check-label">Advanced Search</label>
+              </div>
+          </div>
+          <div v-if="checked === true"  v-cloak>
+              <div class="col">
+                  <div class="form-row">
+                      <div class="form-group col-md-6">
+                          <label> First Name: </label>
+                          <input type="text"  v-model="form.fname" class="form-control" />
+                      </div>
+                      <div class="form-group col-md-6">
+                          <label> Last Name: </label>
+                          <input type="text" v-model="form.lname" class="form-control" />
+                      </div>
+                  </div>
+              </div>
+              <div class="col">
+                  <div class="form-group">
+                      <label>Address: </label>
+                      <input type="text" v-model="form.address" class="form-control" />
+                  </div>
+              </div>
+
+              <div class="col">
+                  <div class="form-group">
+                      <label>Policy Number: </label>
+                      <input type="number" v-model="form.policy_number" class="form-control" />
+                  </div>
+              </div>
+
+              <div class="col">
+                <div class="form-group">
+                    <label>Policy Type: </label>
+                    <select class="form-control" v-model="form.policy_type">
+                      <option hidden disabled selected value>Select a policy type</option>
+                      <option>Homeowners</option>
+                      <option>Dwellers Fire</option>
+                      <option>Commercial</option>
+                    </select>
+                </div>
+
+              </div>
+          </div>
+
         </form>
       </div>
       <div class="col">
-        <div class="list-group">
+        <div class="list-group" v-if="dataCode === 'pn'|| dataCode === 'add'" v-cloak>
+          <div class="list-group-item list-group-item-action" >
+              <div class="row">
+                <div class="col first-row-col">
+              <i>Contact: </i>{% raw %}{{requestData[0].first_name|capitalize}} {{requestData[0].last_name|capitalize}} {% endraw %}
+                <div class="float-right">
+                  <input type="checkbox" v-model="post" v-bind:value="requestData[2].policy_number">
+                </div>
+            </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <i>Address: </i>{% raw %}{{requestData[1].address|address}}{% endraw %}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <i>Policy Number: #</i>{% raw %}{{requestData[2].policy_number}}{% endraw %}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <i>Policy Type: </i>{% raw %}{{requestData[3].policy_type|title}}{% endraw %}
+              </div>
+            </div>
+            </div>
+        </div>
+
+        <div id="contactaccordion" v-else-if="dataCode === 'ct'" v-cloak>
+          <div v-for="(items,index) in requestData">
+          <div class="card">
+            <div class="card-header">
+              <div class="row">
+                <div class="col first-row-col">
+
+                <button class="btn btn-link" v-bind:id="items.id" data-toggle="collapse" :data-target="'#'+items.id + 'addresses'">
+                  {% raw %}{{items.first_name|capitalize}} {{items.last_name|capitalize}}{% endraw %}
+                </button>
+
+                <div class="float-right align-middle">
+
+              </div>
+            </div>
+            </div>
+
+            </div>
+            <div v-bind:id="items.id + 'addresses'" class="collapse" data-parent="#contactaccordion">
+              <div class="card-body" >
+                <div class="list-group" v-for="address in items.addresses">
+                  <div class="row">
+                    <div class="col first-row-col">
+                  {% raw %}{{address|address}}{% endraw %}
+                  <div class="float-right">
+                    <input type="checkbox" v-model="post" v-bind:value="address">
+                  </div>
+                </div>
+
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
 
 
+
+      <div class = "policytype-container" v-else-if="dataCode === 'pt' || dataCode ==='adv'"  v-cloak>
+      <div class="row">
+        <div class="col">
+          <div class="form-check">
+            <input class="form-check-input float-right" type="checkbox" v-model="selectAll" id="selectcheck">
+            <label class="form-check-label float-left" for="selectcheck">
+              Select All
+            </label>
+          </div>
+
+        </div>
+      </div>
+      <div class="list-group"  v-for="p in requestData">
+        <div class="list-group-item list-group-item-action" >
+          <div class="row">
+            <div class="col first-row-col">
+          <i>Contact: </i>{% raw %}{{p.first_name|capitalize}} {{p.last_name|capitalize}} {% endraw %}
+          <div class="float-right">
+              <input type="checkbox" v-model="post" v-bind:value="p.policy_number">
+          </div>
+        </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <i>Address: </i>{% raw %}{{p.address|address}}{% endraw %}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <i>Policy Number: #</i>{% raw %}{{p.policy_number}}{% endraw %}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <i>Policy Type: </i>{% raw %}{{p.policy|title}}{% endraw %}
+          </div>
+        </div>
         </div>
 
       </div>
-      <div class="col">
+    </div>
+
+
+        <div v-else  v-cloak>
+          <p> Cannot find results</p>
+        </div>
+
+      </div>
+      <div class="col" v-if="post.length > 0" v-cloak>
          <div id="accordion">
+           {% for g in general %}
            <div class="card">
-             <div class="card-header" id="headingAll">
+             <div class="card-header" id="headinggeneral">
                <h5>
-                 <button class="btn btn-link" data-toggle="collapse" data-target="#bodyAll" aria-expanded="true" aria-controls="headingAll">
-                   All
+                 <button class="btn btn-link" data-toggle="collapse" data-target="#bodygeneral">
+                   General <span class="badge badge-primary">{{general|length}}</span>
                  </button>
                </h5>
              </div>
-             <div id="bodyAll" class="collapse" data-parent="#accordion">
+             <div id="bodygeneral" class="collapse" data-parent="#accordion">
                <div class="card-body">
+                 <div class="list-group">
+
+                   <button class="list-group-item list-group-item-action" v-on:click="letterCode = {{g.id}}" >{{g.name}}</a>
+
+                 </div>
                </div>
              </div>
            </div>
-
-           {% for i in letter_categories %}
+           {% endfor %}
+           {% for h in homeowners %}
            <div class="card">
-             <div class="card-header" id="heading{{i.policy_type}}">
+             <div class="card-header" id="headinghomeown">
                <h5>
-                 <button class="btn btn-link" data-toggle="collapse" data-target="#body{{i.policy_type}}" aria-expanded="true" aria-controls="headingAll">
-                   {{i.policy_type}}
+                 <button class="btn btn-link" data-toggle="collapse" data-target="#bodyhomeowners" >
+                   Homeowners <span class="badge badge-primary">{{homeowners|length}}</span>
                  </button>
                </h5>
              </div>
-             <div id="body{{i.policy_type}}" class="collapse" data-parent="#accordion">
+             <div id="bodyhomeowners" class="collapse" data-parent="#accordion">
                <div class="card-body">
+                 <div class="list-group">
+
+                   <button class="list-group-item list-group-item-action" v-on:click="letterCode = {{h.id}}" >{{h.name}}</a>
+
+                 </div>
+               </div>
+             </div>
+           </div>
+           {% endfor %}
+           {% for d in dwellers %}
+           <div class="card">
+             <div class="card-header" id="headingdweller">
+               <h5>
+                 <button class="btn btn-link" data-toggle="collapse" data-target="#bodydweller" >
+                   Dwellers Fire <span class="badge badge-primary">{{dwellers|length}}</span>
+                 </button>
+               </h5>
+             </div>
+             <div id="bodydweller" class="collapse" data-parent="#accordion">
+               <div class="card-body">
+                 <div class="list-group">
+
+                   <button class="list-group-item list-group-item-action" v-on:click="letterCode = {{d.id}}" >{{d.name}}</a>
+
+                 </div>
+               </div>
+             </div>
+           </div>
+           {% endfor %}
+           {% for c in commercial %}
+           <div class="card">
+             <div class="card-header" id="headingcommercial">
+               <h5>
+                 <button class="btn btn-link" data-toggle="collapse" data-target="#bodycommercial" >
+                   Commercial <span class="badge badge-primary">{{commercial|length}}</span>
+                 </button>
+               </h5>
+             </div>
+             <div id="bodycommercial" class="collapse" data-parent="#accordion">
+               <div class="card-body">
+                 <div class="list-group">
+
+                   <button class="list-group-item list-group-item-action" v-on:click="letterCode = {{c.id}}" >{{c.name}}</a>
+
+                 </div>
                </div>
              </div>
            </div>
@@ -75,6 +574,13 @@
 
     </div>
 
+  <div class="row">
+  <div class="col" v-if="post.length > 0" v-cloak>
+  <button type="button"  id="back_button" class="btn btn-primary"  @click="post = []"><i class="fas fa-angle-left"></i></button>
+  </div>
+  </div>
+
+</div>
 </div>
 </section>
 

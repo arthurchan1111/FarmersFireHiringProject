@@ -1,5 +1,4 @@
 
-
 [v-cloak] { display:none; }
 
 #basicSearch{
@@ -7,7 +6,6 @@
   border-left: 0;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  background-color: #fff;
 
 }
 button:focus {outline:0;}
@@ -22,7 +20,13 @@ section{
 }
 
 .form-check{
+  margin-top: 3%;
   margin-left: 3%;
+}
+
+#selectcheck{
+  position:relative;
+  margin-right: 6px;
 }
 
 #accordion{
@@ -33,14 +37,6 @@ section{
   background-color: #fff;
 }
 
-.slide-fade-enter-active {
-  transition: all .3s ease;
-}
-.slide-fade-leave-active {
-  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
-  transform: translateX(10px);
-  opacity: 0;
+.first-row-col{
+  padding-right: 0;
 }
